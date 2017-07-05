@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+<language name="C Source File">
+<includepath workspace_path="true">/${ProjName}/source</includepath>
+<includepath workspace_path="true">/${ProjName}</includepath>
+<includepath workspace_path="true">/${ProjName}/drivers</includepath>
+<includepath workspace_path="true">/${ProjName}/frdmkw41z</includepath>
+<includepath workspace_path="true">/${ProjName}/startup</includepath>
+<includepath workspace_path="true">/${ProjName}/CMSIS</includepath>
+<includepath workspace_path="true">/${ProjName}/freertos</includepath>
+<includepath workspace_path="true">/${ProjName}/utilities</includepath>
+
+</language>
+<language name="Additional Assembly Source Files">
+<includepath workspace_path="true">/${ProjName}/source</includepath>
+<includepath workspace_path="true">/${ProjName}</includepath>
+<includepath workspace_path="true">/${ProjName}/drivers</includepath>
+<includepath workspace_path="true">/${ProjName}/frdmkw41z</includepath>
+<includepath workspace_path="true">/${ProjName}/startup</includepath>
+<includepath workspace_path="true">/${ProjName}/CMSIS</includepath>
+<includepath workspace_path="true">/${ProjName}/freertos</includepath>
+<includepath workspace_path="true">/${ProjName}/utilities</includepath>
+
+</language>
+<language name="Assembly Source File">
+<includepath workspace_path="true">/${ProjName}/source</includepath>
+<includepath workspace_path="true">/${ProjName}</includepath>
+<includepath workspace_path="true">/${ProjName}/drivers</includepath>
+<includepath workspace_path="true">/${ProjName}/frdmkw41z</includepath>
+<includepath workspace_path="true">/${ProjName}/startup</includepath>
+<includepath workspace_path="true">/${ProjName}/CMSIS</includepath>
+<includepath workspace_path="true">/${ProjName}/freertos</includepath>
+<includepath workspace_path="true">/${ProjName}/utilities</includepath>
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+<language name="C Source File">
+<macro>
+<name>CR_INTEGER_PRINTF</name><value/>
+</macro>
+<macro>
+<name>__MCUXPRESSO</name><value/>
+</macro>
+<macro>
+<name>__USE_CMSIS</name><value/>
+</macro>
+<macro>
+<name>DEBUG</name><value/>
+</macro>
+<macro>
+<name>SDK_OS_FREE_RTOS</name><value/>
+</macro>
+<macro>
+<name>FSL_RTOS_FREE_RTOS</name><value/>
+</macro>
+<macro>
+<name>CPU_MKW41Z512CAT4_cm0plus</name><value/>
+</macro>
+<macro>
+<name>CPU_MKW41Z512CAT4</name><value/>
+</macro>
+<macro>
+<name>__REDLIB__</name><value/>
+</macro>
+
+</language>
+<language name="Additional Assembly Source Files">
+
+</language>
+<language name="Assembly Source File">
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+</cdtprojectproperties>

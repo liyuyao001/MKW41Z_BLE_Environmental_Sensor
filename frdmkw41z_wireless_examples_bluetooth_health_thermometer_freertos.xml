@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+<language name="C Source File">
+<includepath workspace_path="true">/${ProjName}/source</includepath>
+<includepath workspace_path="true">/${ProjName}</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/time</includepath>
+<includepath workspace_path="true">/${ProjName}/freertos</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/XCVR/MKW41Z4</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Lists</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/MWSCoexistence/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/OSAbstraction/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/host/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/host/config</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/controller/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/drivers</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/hci_transport/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/CMSIS</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/SPI_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/battery</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/UART_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/ModuleInfo</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SecLib</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Messaging/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Flash/Internal</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/DCDC/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Panic/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/device_info</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/board</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/FunctionLib</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/NVM/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/NVM/Source</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/MemManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/GPIO</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/health_thermometer</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/I2C_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/common</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common/gatt_db/macros</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common/gatt_db</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/RNG/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/TimersManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/TimersManager/Source</includepath>
+<includepath workspace_path="true">/${ProjName}/utilities</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/LED/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Keyboard/Interface</includepath>
+
+</language>
+<language name="Additional Assembly Source Files">
+<includepath workspace_path="true">/${ProjName}/source</includepath>
+<includepath workspace_path="true">/${ProjName}</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/time</includepath>
+<includepath workspace_path="true">/${ProjName}/freertos</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/XCVR/MKW41Z4</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Lists</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/MWSCoexistence/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/OSAbstraction/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/host/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/host/config</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/controller/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/drivers</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/hci_transport/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/CMSIS</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/SPI_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/battery</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/UART_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/ModuleInfo</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SecLib</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Messaging/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Flash/Internal</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/DCDC/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Panic/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/device_info</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/board</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/FunctionLib</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/NVM/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/NVM/Source</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/MemManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/GPIO</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/health_thermometer</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/I2C_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/common</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common/gatt_db/macros</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common/gatt_db</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/RNG/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/TimersManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/TimersManager/Source</includepath>
+<includepath workspace_path="true">/${ProjName}/utilities</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/LED/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Keyboard/Interface</includepath>
+
+</language>
+<language name="Assembly Source File">
+<includepath workspace_path="true">/${ProjName}/source</includepath>
+<includepath workspace_path="true">/${ProjName}</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/time</includepath>
+<includepath workspace_path="true">/${ProjName}/freertos</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/XCVR/MKW41Z4</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Lists</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/MWSCoexistence/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/OSAbstraction/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/host/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/host/config</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/controller/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/drivers</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/hci_transport/interface</includepath>
+<includepath workspace_path="true">/${ProjName}/CMSIS</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/SPI_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/battery</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/UART_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/ModuleInfo</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SecLib</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Messaging/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Flash/Internal</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/DCDC/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Panic/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/device_info</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/board</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/FunctionLib</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/NVM/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/NVM/Source</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/MemManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/GPIO</includepath>
+<includepath workspace_path="true">/${ProjName}/bluetooth/profiles/health_thermometer</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/SerialManager/Source/I2C_Adapter</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/common</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common/gatt_db/macros</includepath>
+<includepath workspace_path="true">/${ProjName}/source/common/gatt_db</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/RNG/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/TimersManager/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/TimersManager/Source</includepath>
+<includepath workspace_path="true">/${ProjName}/utilities</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/LED/Interface</includepath>
+<includepath workspace_path="true">/${ProjName}/framework/Keyboard/Interface</includepath>
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+<language name="C Source File">
+<macro>
+<name>CR_INTEGER_PRINTF</name><value/>
+</macro>
+<macro>
+<name>DEBUG</name><value/>
+</macro>
+<macro>
+<name>FSL_RTOS_FREE_RTOS</name><value/>
+</macro>
+<macro>
+<name>FRDM_KW41Z</name><value/>
+</macro>
+<macro>
+<name>FREEDOM</name><value/>
+</macro>
+<macro>
+<name>__MCUXPRESSO</name><value/>
+</macro>
+<macro>
+<name>__USE_CMSIS</name><value/>
+</macro>
+<macro>
+<name>SDK_OS_FREE_RTOS</name><value/>
+</macro>
+<macro>
+<name>CPU_MKW41Z512VHT4_cm0plus</name><value/>
+</macro>
+<macro>
+<name>CPU_MKW41Z512VHT4</name><value/>
+</macro>
+<macro>
+<name>__REDLIB__</name><value/>
+</macro>
+
+</language>
+<language name="Additional Assembly Source Files">
+
+</language>
+<language name="Assembly Source File">
+
+</language>
+<language name="Object File">
+
+</language>
+</section>
+</cdtprojectproperties>
