@@ -598,6 +598,24 @@ while((RSIM->CONTROL & RSIM_CONTROL_RF_OSC_READY_MASK) == 0 )
 {}
 }
 
+/* Initialize debug console. */
+void BOARD_InitDebugConsole(void)
+{
+    uint32_t uartClkSrcFreq;
+
+    /* SIM_SOPT2[27:26]:
+     *  00: Clock Disabled
+     *  01: MCGFLLCLK
+     *  10: OSCERCLK
+     *  11: MCGIRCCLK
+     */
+    CLOCK_SetLpuartClock(2);
+
+    uartClkSrcFreq = BOARD_DEBUG_UART_CLK_FREQ;
+
+    DbgConsole_Init(BOARD_DEBUG_UART_BASEADDR, BOARD_DEBUG_UART_BAUDRATE, BOARD_DEBUG_UART_TYPE, uartClkSrcFreq);
+}
+
 /*******************************************************************************
  * EOF
  ******************************************************************************/

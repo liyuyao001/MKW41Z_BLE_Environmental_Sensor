@@ -107,9 +107,15 @@ void BOARD_InitLPUART(void);
  */
 void BOARD_InitI2C(void);
 
+/*!
+ *
+ */
+void BOARD_I2C_ConfigurePins(void);
+
 #if defined(__cplusplus)
 }
 #endif
+
 
 /*!
  * @}

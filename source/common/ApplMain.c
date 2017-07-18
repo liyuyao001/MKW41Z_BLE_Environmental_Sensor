@@ -84,6 +84,9 @@
 /* include NVM interface */
 #include "NVM_Interface.h"
 #endif
+
+#include "HDC1080_task_config.h"
+
 /************************************************************************************
 *************************************************************************************
 * Private macros
@@ -280,6 +283,8 @@ extern void BleApp_GenericCallback (gapGenericEvent_t* pGenericEvent);
 extern void (*pfBLE_SignalFromISR)(void);
 #endif /* gUseHciTransportDownward_d */
 
+extern void HDC1080_task(void *pvParameters);
+#define HDC1080_task_PRIORITY			10
 /************************************************************************************
 *************************************************************************************
 * Private memory declarations
@@ -426,7 +431,16 @@ void main_task(uint32_t param)
             return;
         }
     }
-    
+
+    HDC1080_TaskInit();
+//    xTaskCreate(HDC1080_task, "HDC1080_task", configMINIMAL_STACK_SIZE + 10, NULL, HDC1080_task_PRIORITY, NULL);
+//	/* Task creation */
+//	gHDC1080_TaskId = OSA_TaskCreate(OSA_TASK(HDC1080_task), NULL);
+//	if( NULL == gHDC1080_TaskId )
+//	{
+//		panic(0,0,0,0);
+//		return osaStatus_Error;
+//	}
     /* Call application task */
     App_Thread( param );
 }

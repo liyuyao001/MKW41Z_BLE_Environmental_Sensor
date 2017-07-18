@@ -46,6 +46,26 @@
 
 #define CORE_CLOCK_FREQ 47972352U
 
+/*! @brief The UART to use for debug messages. */
+#define BOARD_USE_LPUART
+#define BOARD_DEBUG_UART_TYPE DEBUG_CONSOLE_DEVICE_TYPE_LPUART
+#define BOARD_DEBUG_UART_BASEADDR (uint32_t) LPUART0
+#define BOARD_DEBUG_UART_CLKSRC kCLOCK_Osc0ErClk
+#define BOARD_DEBUG_UART_CLK_FREQ CLOCK_GetOsc0ErClkFreq()
+#define BOARD_UART_IRQ LPUART0_IRQn
+#define BOARD_UART_IRQ_HANDLER LPUART0_IRQHandler
+
+#ifndef BOARD_DEBUG_UART_BAUDRATE
+#define BOARD_DEBUG_UART_BAUDRATE 115200
+#endif /* BOARD_DEBUG_UART_BAUDRATE */
+
+/*! @brief The adc16 alternate reference voltage pin is used for frdmkw41 board rev A2 */
+#define BOARD_ADC_USE_ALT_VREF 1U
+
+/*! @brief The i2c instance used for i2c connection by default */
+#define BOARD_I2C_BASEADDR I2C1
+#define BOARD_ACCEL_I2C_BASEADDR I2C1
+
 /* Connectivity */
 #ifndef APP_SERIAL_INTERFACE_TYPE
 #define APP_SERIAL_INTERFACE_TYPE (gSerialMgrLpuart_c)
@@ -172,6 +192,8 @@ uint32_t BOARD_GetSpiClock(uint32_t instance);
 uint32_t BOARD_GetI2cClock(uint32_t instance);
 void BOARD_BLPEtoBLPI(void);
 void BOARD_BLPItoBLPE(void);
+void BOARD_InitDebugConsole(void);
+
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

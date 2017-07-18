@@ -45,11 +45,17 @@ PinsProfile:
 #include "fsl_port.h"
 #include "pin_mux.h"
 
+#define PIN6_IDX                         6u   /*!< Pin number for pin 6 in a port */
+#define PIN7_IDX                         7u   /*!< Pin number for pin 7 in a port */
+#define SOPT5_LPUART0RXSRC_LPUART_RX  0x00u   /*!< LPUART0 Receive Data Source Select: LPUART_RX pin */
+
 /*
  * TEXT BELOW IS USED AS SETTING FOR THE PINS TOOL *****************************
 BOARD_InitPins:
 - options: {coreID: singlecore, enableClock: 'true'}
-- pin_list: []
+- pin_list:
+  - {pin_num: '42', peripheral: LPUART0, signal: RX, pin_signal: TSI0_CH2/PTC6/LLWU_P14/XTAL_OUT_EN/I2C1_SCL/UART0_RX/TPM2_CH0/BSM_FRAME}
+  - {pin_num: '43', peripheral: LPUART0, signal: TX, pin_signal: TSI0_CH3/PTC7/LLWU_P15/SPI0_PCS2/I2C1_SDA/UART0_TX/TPM2_CH1/BSM_DATA}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR THE PINS TOOL ***
  */
 
@@ -60,6 +66,14 @@ BOARD_InitPins:
  *
  *END**************************************************************************/
 void BOARD_InitPins(void) {
+  CLOCK_EnableClock(kCLOCK_PortC);                           /* Port C Clock Gate Control: Clock enabled */
+
+  PORT_SetPinMux(PORTC, PIN6_IDX, kPORT_MuxAlt4);            /* PORTC6 (pin 42) is configured as UART0_RX */
+  PORT_SetPinMux(PORTC, PIN7_IDX, kPORT_MuxAlt4);            /* PORTC7 (pin 43) is configured as UART0_TX */
+  SIM->SOPT5 = ((SIM->SOPT5 &
+    (~(SIM_SOPT5_LPUART0RXSRC_MASK)))                        /* Mask bits to zero which are setting */
+      | SIM_SOPT5_LPUART0RXSRC(SOPT5_LPUART0RXSRC_LPUART_RX) /* LPUART0 Receive Data Source Select: LPUART_RX pin */
+    );
 }
 
 
@@ -293,6 +307,44 @@ void BOARD_InitI2C(void) {
       | PORT_PCR_PS(PCR_PS_UP)                               /* Pull Select: Internal pullup resistor is enabled on the corresponding pin, if the corresponding PE field is set. */
       | PORT_PCR_PE(PCR_PE_ENABLED)                          /* Pull Enable: Internal pullup or pulldown resistor is enabled on the corresponding pin, if the pin is configured as a digital input. */
     );
+}
+
+/*
+ * TEXT BELOW IS USED AS SETTING FOR THE PINS TOOL *****************************
+BOARD_I2C_ConfigurePins:
+- options: {coreID: singlecore, enableClock: 'true'}
+- pin_list:
+  - {pin_num: '38', peripheral: I2C1, signal: CLK, pin_signal: TSI0_CH14/PTC2/LLWU_P10/TX_SWITCH/I2C1_SCL/UART0_RX/CMT_IRO/DTM_RX, slew_rate: fast, drive_strength: low,
+    pull_select: up, pull_enable: enable}
+  - {pin_num: '39', peripheral: I2C1, signal: SDA, pin_signal: TSI0_CH15/PTC3/LLWU_P11/RX_SWITCH/I2C1_SDA/UART0_TX/TPM0_CH1/DTM_TX, slew_rate: fast, drive_strength: low,
+    pull_select: up, pull_enable: enable}
+ * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR THE PINS TOOL ***
+ */
+
+/*FUNCTION**********************************************************************
+ *
+ * Function Name : BOARD_I2C_ConfigurePins
+ *
+ *END**************************************************************************/
+void BOARD_I2C_ConfigurePins(void) {
+  CLOCK_EnableClock(kCLOCK_PortC);                           /* Port C Clock Gate Control: Clock enabled */
+
+  const port_pin_config_t portc2_pin38_config = {
+    kPORT_PullUp,                                            /* Internal pull-up resistor is enabled */
+    kPORT_FastSlewRate,                                      /* Fast slew rate is configured */
+    kPORT_PassiveFilterDisable,                              /* Passive filter is disabled */
+    kPORT_LowDriveStrength,                                  /* Low drive strength is configured */
+    kPORT_MuxAlt3,                                           /* Pin is configured as I2C1_SCL */
+  };
+  PORT_SetPinConfig(PORTC, PIN2_IDX, &portc2_pin38_config);  /* PORTC2 (pin 38) is configured as I2C1_SCL */
+  const port_pin_config_t portc3_pin39_config = {
+    kPORT_PullUp,                                            /* Internal pull-up resistor is enabled */
+    kPORT_FastSlewRate,                                      /* Fast slew rate is configured */
+    kPORT_PassiveFilterDisable,                              /* Passive filter is disabled */
+    kPORT_LowDriveStrength,                                  /* Low drive strength is configured */
+    kPORT_MuxAlt3,                                           /* Pin is configured as I2C1_SDA */
+  };
+  PORT_SetPinConfig(PORTC, PIN3_IDX, &portc3_pin39_config);  /* PORTC3 (pin 39) is configured as I2C1_SDA */
 }
 
 /*******************************************************************************
