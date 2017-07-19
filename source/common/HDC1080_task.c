@@ -70,6 +70,8 @@ osaEventId_t gHDC1080_TaskEvent;
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+#define I2C_READ_FROM_HDC1080
+
 #define ACCEL_I2C_CLK_SRC I2C1_CLK_SRC
 #define ACCEL_I2C_CLK_FREQ CLOCK_GetFreq(I2C1_CLK_SRC)
 
@@ -90,6 +92,13 @@ osaEventId_t gHDC1080_TaskEvent;
 #define ACCEL_WHOAMI_REG 0x0DU
 #define ACCEL_READ_TIMES 10U
 
+#define HDC_I2C_CLK_SRC I2C1_CLK_SRC
+#define HDC_I2C_CLK_FREQ CLOCK_GetFreq(I2C1_CLK_SRC)
+
+#define HDC1080_WHOAMI 0x5010U			//0x1050
+#define HDC_WHOAMI_REG 0xFFU
+
+
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -99,14 +108,29 @@ static bool I2C_ReadAccelWhoAmI(void);
 static bool I2C_WriteAccelReg(I2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t value);
 static bool I2C_ReadAccelRegs(I2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t *rxBuff, uint32_t rxSize);
 
+static bool I2C_ReadHDCWhoAmI(void);
+static bool I2C_WriteHDCReg(I2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t value);
+static bool I2C_ReadHDCRegs(I2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t *rxBuff, uint32_t rxSize);
+
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
 /*  FXOS8700 and MMA8451 device address */
 const uint8_t g_accel_address[] = {0x1CU, 0x1DU, 0x1EU, 0x1FU};
-
+/*  HDC1080 device address */
+const uint8_t g_HDC_address[] = {0x40U};
 i2c_master_handle_t g_m_handle;
+
+uint8_t 	HDC_Data[4] = {0};					//Buffer for received bytes
+//*****************************************************************************
+// Global Variables
+//*****************************************************************************
+uint8_t 	i2c_transmitCounter;	//Variable to store transmit status for I2C
+uint8_t 	*p_i2c_transmitData;	//Pointer to I2C transmit data
+uint8_t 	*p_i2c_receivedData;	//Pointer to I2C received data
+int32_t		HDC_Temp;			//Variable to store temperature
+uint32_t 	HDC_RH;				//Variable to store humidity
 
 uint8_t g_accel_addr_found = 0x00;
 
@@ -379,76 +403,7 @@ static bool I2C_ReadAccelRegs(I2C_Type *base, uint8_t device_addr, uint8_t reg_a
     }
 }
 
-
-/************************************************************************************
-*************************************************************************************
-* Private prototypes
-*************************************************************************************
-************************************************************************************/
-static void HDC1080_Task(osaTaskParam_t argument);
-/************************************************************************************
-*************************************************************************************
-* Private memory declarations
-*************************************************************************************
-************************************************************************************/
-OSA_TASK_DEFINE(HDC1080_Task, gHDC1080_TaskPriority_c, 1, gHDC1080_TaskStackSize_c, FALSE);
-
-/************************************************************************************
-*************************************************************************************
-* Public functions
-*************************************************************************************
-************************************************************************************/
-
-osaStatus_t HDC1080_TaskInit(void)
-{     
-    /* Already initialized? */
-    if(gHDC1080_TaskId)
-    {      
-      return osaStatus_Error;
-    }
-    
-    /* Initialization of task related */
-    gHDC1080_TaskEvent = OSA_EventCreate(TRUE);
-    if( gHDC1080_TaskEvent == NULL)
-    {
-        return osaStatus_Error;
-    }
-
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_I2C_ReleaseBus();
-    BOARD_I2C_ConfigurePins();
-    BOARD_InitDebugConsole();
-
-
-    /* Task creation */
-     
-    gHDC1080_TaskId = OSA_TaskCreate(OSA_TASK(HDC1080_Task), NULL);
-    
-    if( NULL == gHDC1080_TaskId )
-    {
-        panic(0,0,0,0);
-        return osaStatus_Error;
-    }
-
-    return osaStatus_Success;
-}
-
-/************************************************************************************
-*************************************************************************************
-* Private functions
-*************************************************************************************
-************************************************************************************/
-
-static void HDC1080_Task(osaTaskParam_t argument)
-{
-    HDC1080_TaskHandler((void *) NULL);
-}
-
-/*! *********************************************************************************
-* @}
-********************************************************************************** */
-void HDC1080_TaskHandler()
+void I2C_ACCEL_TaskHandler()
 {
 	while(1)
 	{
@@ -525,7 +480,514 @@ void HDC1080_TaskHandler()
 		    PRINTF("\r\nEnd of I2C example .\r\n");
 
 		    OSA_TimeDelay(200);
+	}
+}
+
+/************************************************************************************
+*************************************************************************************
+* Private prototypes
+*************************************************************************************
+************************************************************************************/
+static void HDC1080_Task(osaTaskParam_t argument);
+/************************************************************************************
+*************************************************************************************
+* Private memory declarations
+*************************************************************************************
+************************************************************************************/
+OSA_TASK_DEFINE(HDC1080_Task, gHDC1080_TaskPriority_c, 1, gHDC1080_TaskStackSize_c, FALSE);
+
+/************************************************************************************
+*************************************************************************************
+* Public functions
+*************************************************************************************
+************************************************************************************/
+
+osaStatus_t HDC1080_TaskInit(void)
+{     
+    /* Already initialized? */
+    if(gHDC1080_TaskId)
+    {      
+      return osaStatus_Error;
+    }
+    
+    /* Initialization of task related */
+    gHDC1080_TaskEvent = OSA_EventCreate(TRUE);
+    if( gHDC1080_TaskEvent == NULL)
+    {
+        return osaStatus_Error;
+    }
+
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+//    BOARD_I2C_ReleaseBus();
+    BOARD_I2C_ConfigurePins();
+    BOARD_InitDebugConsole();
+
+
+    /* Task creation */
+     
+    gHDC1080_TaskId = OSA_TaskCreate(OSA_TASK(HDC1080_Task), NULL);
+    
+    if( NULL == gHDC1080_TaskId )
+    {
+        panic(0,0,0,0);
+        return osaStatus_Error;
+    }
+
+    return osaStatus_Success;
+}
+
+/************************************************************************************
+*************************************************************************************
+* Private functions
+*************************************************************************************
+************************************************************************************/
+
+static void HDC1080_Task(osaTaskParam_t argument)
+{
+    HDC1080_TaskHandler((void *) NULL);
+//	I2C_ACCEL_TaskHandler((void *) NULL);
+}
+
+/*! *********************************************************************************
+* @}
+********************************************************************************** */
+void HDC1080_TaskHandler()
+{
+	PRINTF("\r\nI2C example -- Read Humidity and Temperature Sensor Value\r\n");
+    bool isThereHDC1080 = false;
+
+	I2C_MasterTransferCreateHandle(BOARD_HDC_I2C_BASEADDR, &g_m_handle, i2c_master_callback, NULL);
+	isThereHDC1080 = I2C_ReadHDCWhoAmI();
+
+	/*  read the accel xyz value if there is accel device on board */
+	if (true == isThereHDC1080)
+	{
+		HDC1080_init();
+//		    	HDC1080_startMeasurement();
+
+	}
+
+	PRINTF("\r\nHDC1080 Initialized .\r\n");
+
+
+	while(1)
+	{
+		OSA_TimeDelay(10);
+//		I2C_ReadHDCWhoAmI();
+		HDC1080_startMeasurement();
+		OSA_TimeDelay(500);
+		HDC1080_readMeasurement();
 //		    vTaskSuspend(NULL);
 
 	}
+}
+
+
+static bool I2C_ReadHDCWhoAmI(void)
+{
+    /*
+    How to read the device who_am_I value ?
+    Start + Device_address_Write , who_am_I_register;
+    Repeart_Start + Device_address_Read , who_am_I_value.
+    */
+    uint8_t who_am_i_reg = HDC_WHOAMI_REG;
+    uint16_t who_am_i_value = 0x00;
+    uint8_t HDC_addr_array_size = 0x00;
+    bool find_device = false;
+    uint8_t i = 0;
+    uint32_t sourceClock = 0;
+
+    i2c_master_config_t masterConfig;
+
+    /*
+     * masterConfig.baudRate_Bps = 100000U;
+     * masterConfig.enableStopHold = false;
+     * masterConfig.glitchFilterWidth = 0U;
+     * masterConfig.enableMaster = true;
+     */
+    I2C_MasterGetDefaultConfig(&masterConfig);
+
+    masterConfig.baudRate_Bps = I2C_BAUDRATE;
+
+    sourceClock = HDC_I2C_CLK_FREQ;
+
+    I2C_MasterInit(BOARD_HDC_I2C_BASEADDR, &masterConfig, sourceClock);
+
+    i2c_master_transfer_t masterXfer;
+    memset(&masterXfer, 0, sizeof(masterXfer));
+
+    masterXfer.slaveAddress = g_HDC_address[0];
+    masterXfer.direction = kI2C_Write;
+    masterXfer.subaddress = 0;
+    masterXfer.subaddressSize = 0;
+    masterXfer.data = &who_am_i_reg;
+    masterXfer.dataSize = 1;
+    masterXfer.flags = kI2C_TransferNoStopFlag;
+
+    HDC_addr_array_size = sizeof(g_HDC_address) / sizeof(g_HDC_address[0]);
+
+    for (i = 0; i < HDC_addr_array_size; i++)
+    {
+        masterXfer.slaveAddress = g_HDC_address[i];
+
+        I2C_MasterTransferNonBlocking(BOARD_HDC_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+        /*  wait for transfer completed. */
+        while ((!nakFlag) && (!completionFlag))
+        {
+        }
+
+        nakFlag = false;
+
+        if (completionFlag == true)
+        {
+            completionFlag = false;
+            find_device = true;
+            g_accel_addr_found = masterXfer.slaveAddress;
+            break;
+        }
+    }
+
+    if (find_device == true)
+    {
+        masterXfer.direction = kI2C_Read;
+        masterXfer.subaddress = 0;
+        masterXfer.subaddressSize = 0;
+        masterXfer.data = &who_am_i_value;
+        masterXfer.dataSize = 2;
+        masterXfer.flags = kI2C_TransferRepeatedStartFlag;
+
+        I2C_MasterTransferNonBlocking(BOARD_HDC_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+        /*  wait for transfer completed. */
+        while ((!nakFlag) && (!completionFlag))
+        {
+        }
+
+        nakFlag = false;
+
+        if (completionFlag == true)
+        {
+            completionFlag = false;
+            if (who_am_i_value == HDC1080_WHOAMI)
+            {
+                PRINTF("Found an HDC1080 on board , the device address is 0x%x . \r\n", masterXfer.slaveAddress);
+                return true;
+            }
+            else
+            {
+                PRINTF("Found a device, the WhoAmI value is 0x%x\r\n", who_am_i_value);
+                PRINTF("It's not HDC1080. \r\n");
+                PRINTF("The device address is 0x%x. \r\n", masterXfer.slaveAddress);
+                return false;
+            }
+        }
+        else
+        {
+            PRINTF("Not a successful i2c communication \r\n");
+            return false;
+        }
+    }
+    else
+    {
+        PRINTF("\r\n Do not find an accelerometer device ! \r\n");
+        return false;
+    }
+}
+
+static bool I2C_WriteHDCReg(I2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t value)
+{
+    i2c_master_transfer_t masterXfer;
+    memset(&masterXfer, 0, sizeof(masterXfer));
+
+    masterXfer.slaveAddress = device_addr;
+    masterXfer.direction = kI2C_Write;
+    masterXfer.subaddress = reg_addr;
+    masterXfer.subaddressSize = 1;
+    masterXfer.data = &value;
+    masterXfer.dataSize = 1;
+    masterXfer.flags = kI2C_TransferDefaultFlag;
+
+    /*  direction=write : start+device_write;cmdbuff;xBuff; */
+    /*  direction=recive : start+device_write;cmdbuff;repeatStart+device_read;xBuff; */
+
+    I2C_MasterTransferNonBlocking(BOARD_ACCEL_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+    /*  wait for transfer completed. */
+    while ((!nakFlag) && (!completionFlag))
+    {
+    }
+
+    nakFlag = false;
+
+    if (completionFlag == true)
+    {
+        completionFlag = false;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+static bool I2C_ReadHDCRegs(I2C_Type *base, uint8_t device_addr, uint8_t reg_addr, uint8_t *rxBuff, uint32_t rxSize)
+{
+    i2c_master_transfer_t masterXfer;
+    memset(&masterXfer, 0, sizeof(masterXfer));
+    masterXfer.slaveAddress = device_addr;
+    masterXfer.direction = kI2C_Read;
+    masterXfer.subaddress = reg_addr;
+    masterXfer.subaddressSize = 1;
+    masterXfer.data = rxBuff;
+    masterXfer.dataSize = rxSize;
+    masterXfer.flags = kI2C_TransferDefaultFlag;
+
+    /*  direction=write : start+device_write;cmdbuff;xBuff; */
+    /*  direction=recive : start+device_write;cmdbuff;repeatStart+device_read;xBuff; */
+
+    I2C_MasterTransferNonBlocking(BOARD_ACCEL_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+    /*  wait for transfer completed. */
+    while ((!nakFlag) && (!completionFlag))
+    {
+    }
+
+    nakFlag = false;
+
+    if (completionFlag == true)
+    {
+        completionFlag = false;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void HDC1080_init(void)
+{
+	i2c_master_transfer_t masterXfer;
+	memset(&masterXfer, 0, sizeof(masterXfer));
+
+	static const uint8_t HDC1080_CONFIGURATION_FRAME[3] =
+	{
+		//Configuration register address
+		CONFIGURATION_ADDRESS,
+		//MSB of configuration (sets Temp & Humidity measurements, 11-bit resolution)
+		TEMP_RH_11BIT_MSB,
+		//LSB of configuration
+		TEMP_RH_11BIT_LSB
+	};
+
+		// Set TX pointer to HDC1080_CONFIGURATION_FRAME
+    	p_i2c_transmitData = (uint8_t *)HDC1080_CONFIGURATION_FRAME;
+
+    	//Load transmit byte counter
+    	i2c_transmitCounter = sizeof HDC1080_CONFIGURATION_FRAME;
+
+//		masterXfer.slaveAddress = HDC1080_ADDRESS;
+//		masterXfer.direction = kI2C_Write;
+//		masterXfer.subaddress = CONFIGURATION_ADDRESS;
+//		masterXfer.subaddressSize = 1;
+//		masterXfer.data = &HDC1080_CONFIGURATION_FRAME[1];
+//		masterXfer.dataSize = i2c_transmitCounter - 1;
+//		masterXfer.flags = kI2C_TransferDefaultFlag;
+////		masterXfer.flags = kI2C_TransferNoStopFlag;
+
+	    masterXfer.slaveAddress = HDC1080_ADDRESS;
+	    masterXfer.direction = kI2C_Write;
+	    masterXfer.subaddress = 0;
+	    masterXfer.subaddressSize = 0;
+	    masterXfer.data = p_i2c_transmitData;
+	    masterXfer.dataSize = i2c_transmitCounter;
+	    masterXfer.flags = kI2C_TransferDefaultFlag;
+
+	    /*  direction=write : start+device_write;cmdbuff;xBuff; */
+	    /*  direction=recive : start+device_write;cmdbuff;repeatStart+device_read;xBuff; */
+
+	    I2C_MasterTransferNonBlocking(BOARD_ACCEL_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+	    /*  wait for transfer completed. */
+	    while ((!nakFlag) && (!completionFlag))
+	    {
+	    }
+
+	    nakFlag = false;
+
+	    if (completionFlag == true)
+	    {
+	        completionFlag = false;
+	        return true;
+	    }
+	    else
+	    {
+	        return false;
+	    }
+
+}
+
+//*****************************************************************************
+//
+// Send sensor a message to sample temperature and humidity.
+//
+//
+// This function sends the HDC1080 the command to start measurement. HDC1080 will
+// interrupt MSP (IO) when data is available for a read.
+//
+// return None.
+//
+//*****************************************************************************
+void HDC1080_startMeasurement(void)
+{
+    i2c_master_transfer_t masterXfer;
+    memset(&masterXfer, 0, sizeof(masterXfer));
+
+
+	static const uint8_t HDC1080_START_MEAS_FRAME[1] =
+	{
+		TEMPERATURE_ADDRESS 	//Temp. register address
+//		SERIAL_ID_HIGH
+	};
+
+	//Transmit array start address
+	p_i2c_transmitData = (uint8_t *)HDC1080_START_MEAS_FRAME;
+	//Load transmit byte counter
+	i2c_transmitCounter = sizeof HDC1080_START_MEAS_FRAME;
+
+    masterXfer.slaveAddress = HDC1080_ADDRESS;
+    masterXfer.direction = kI2C_Write;
+    masterXfer.subaddress = 0;
+    masterXfer.subaddressSize = 0;
+    masterXfer.data = p_i2c_transmitData;
+    masterXfer.dataSize = i2c_transmitCounter;
+    masterXfer.flags = kI2C_TransferDefaultFlag;
+
+//	masterXfer.slaveAddress = HDC1080_ADDRESS;
+//	masterXfer.direction = kI2C_Write;
+//	masterXfer.subaddress = 0;
+//	masterXfer.subaddressSize = 0;
+//	masterXfer.data = p_i2c_transmitData;
+//	masterXfer.dataSize = i2c_transmitCounter;
+//	masterXfer.flags = kI2C_TransferNoStopFlag;
+
+
+    /*  direction=write : start+device_write;cmdbuff;xBuff; */
+    /*  direction=recive : start+device_write;cmdbuff;repeatStart+device_read;xBuff; */
+
+    I2C_MasterTransferNonBlocking(BOARD_ACCEL_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+    /*  wait for transfer completed. */
+    while ((!nakFlag) && (!completionFlag))
+    {
+    }
+
+    nakFlag = false;
+
+    if (completionFlag == true)
+    {
+        completionFlag = false;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
+
+//*****************************************************************************
+//
+// Read temperature and humidity from sensor
+//
+//
+// This function reads the data from the HDC1080. HDC1080_readMeasurement is called
+// after the HDC1080 triggers a ready interrupt.
+//
+// return None.
+//
+//*****************************************************************************
+void HDC1080_readMeasurement(void)
+{
+    i2c_master_transfer_t masterXfer;
+    memset(&masterXfer, 0, sizeof(masterXfer));
+
+    static const uint8_t HDC1080_READ_MEAS_FRAME[1] =
+	{
+		TEMPERATURE_ADDRESS 	//Temp. register address
+//		0xFE
+	};
+	//Transmit array start address
+	p_i2c_transmitData = (uint8_t *)HDC1080_READ_MEAS_FRAME;
+	//Load transmit byte counter
+	i2c_transmitCounter = sizeof HDC1080_READ_MEAS_FRAME;
+
+	masterXfer.slaveAddress = HDC1080_ADDRESS;
+	masterXfer.direction = kI2C_Write;
+	masterXfer.subaddress = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data = p_i2c_transmitData;
+	masterXfer.dataSize = i2c_transmitCounter;
+	masterXfer.flags = kI2C_TransferNoStopFlag;
+	I2C_MasterTransferNonBlocking(BOARD_HDC_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+	/*  wait for transfer completed. */
+	while ((!nakFlag) && (!completionFlag))
+	{
+	}
+
+	nakFlag = false;
+
+	if (completionFlag == true)
+	{
+		completionFlag = false;
+	}
+
+	OSA_TimeDelay(500);
+
+	masterXfer.direction = kI2C_Read;
+	masterXfer.subaddress = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data = (uint8_t *)HDC_Data;
+//	masterXfer.dataSize = 2;
+	masterXfer.dataSize = sizeof HDC_Data;
+	masterXfer.flags = kI2C_TransferRepeatedStartFlag;
+
+	I2C_MasterTransferNonBlocking(BOARD_HDC_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+	/*  wait for transfer completed. */
+	while ((!nakFlag) && (!completionFlag))
+	{
+	}
+
+	nakFlag = false;
+
+	if (completionFlag == true)
+	{
+		completionFlag = false;
+	}
+
+
+	//Combine HDC Temp data bytes into one variable (allows for IQMath)
+	HDC_Temp = (
+			(0x00000000) |
+			((uint32_t)HDC_Data[0] << 8) |
+			((uint32_t)HDC_Data[1] << 0)
+			);
+	//Calculate temp according to HDC1080 datasheet
+	HDC_Temp = ((HDC_Temp*165)>>16)-40;
+
+	//Combine HDC RH data bytes into one 32-bit variable (allows for IQMath)
+	HDC_RH = (
+			(0x00000000) |
+			((uint32_t)HDC_Data[2] << 8) |
+			((uint32_t)HDC_Data[3] << 0)
+			);
+
+	//Calculate RH according to HDC1080 datasheet (leaves result in RH%)
+	HDC_RH = (HDC_RH*100)>>16;
+	PRINTF("The Temperature is %d\t", HDC_Temp);
+	PRINTF("The Humidity is %d\r\n", HDC_RH);
 }

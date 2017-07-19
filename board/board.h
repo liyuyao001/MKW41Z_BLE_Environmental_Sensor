@@ -65,6 +65,7 @@
 /*! @brief The i2c instance used for i2c connection by default */
 #define BOARD_I2C_BASEADDR I2C1
 #define BOARD_ACCEL_I2C_BASEADDR I2C1
+#define BOARD_HDC_I2C_BASEADDR I2C1
 
 /* Connectivity */
 #ifndef APP_SERIAL_INTERFACE_TYPE
