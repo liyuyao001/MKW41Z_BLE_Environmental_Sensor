@@ -89,8 +89,8 @@
 //extern uint8_t 	i2c_transmitCounter;	//Variable to store transmit status for I2C
 //extern uint8_t 	*p_i2c_transmitData;	//Pointer to I2C transmit data
 //extern uint8_t 	*p_i2c_receivedData;	//Pointer to I2C received data
-//extern int32_t		HDC_Temp;			//Variable to store temperature
-//extern uint32_t 	HDC_RH;				//Variable to store humidity
+extern int32_t		HDC_Temp;			//Variable to store temperature
+extern uint32_t 	HDC_RH;				//Variable to store humidity
 
 //*****************************************************************************
 // Function declarations

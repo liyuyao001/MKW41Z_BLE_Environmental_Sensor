@@ -68,6 +68,9 @@
 #include "board.h"
 #include "ApplMain.h"
 #include "health_thermometer.h"
+//added by liyuyao
+#include "HDC1080_task_config.h"
+
 
 /************************************************************************************
 *************************************************************************************
@@ -714,7 +717,9 @@ static void TimerMeasurementCallback(void * pParam)
     tempMeas.unit = gHts_UnitInCelsius_c;
     time = Cts_EpochToDayDateTime(localTime);
     FLib_MemCpy(&tempMeas.timeStamp, &time.dateTime, sizeof(ctsDateTime_t));
-    tempMeas.temperature = 35 + (random & 0x07);
+//    tempMeas.temperature = 35 + (random & 0x07);
+    //modified by liyuyao
+    tempMeas.temperature = HDC_Temp;
         
     if (mIntermediateTempCounter < 4)
     {    
@@ -737,7 +742,9 @@ static void TimerMeasurementCallback(void * pParam)
 ********************************************************************************** */
 static void BatteryMeasurementTimerCallback(void * pParam)
 {
-    basServiceConfig.batteryLevel = BOARD_GetBatteryLevel();
+//    basServiceConfig.batteryLevel = BOARD_GetBatteryLevel();
+	//modified by liyuyao
+    basServiceConfig.batteryLevel = HDC_RH;
     Bas_RecordBatteryMeasurement(basServiceConfig.serviceHandle, basServiceConfig.batteryLevel);
 }
 

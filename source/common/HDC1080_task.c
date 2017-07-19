@@ -574,10 +574,10 @@ void HDC1080_TaskHandler()
 	while(1)
 	{
 		OSA_TimeDelay(10);
-//		I2C_ReadHDCWhoAmI();
 		HDC1080_startMeasurement();
-		OSA_TimeDelay(500);
+		OSA_TimeDelay(400);
 		HDC1080_readMeasurement();
+//		HDC1080_readMeasurement_Combined();
 //		    vTaskSuspend(NULL);
 
 	}
@@ -904,12 +904,12 @@ void HDC1080_startMeasurement(void)
 //
 //
 // This function reads the data from the HDC1080. HDC1080_readMeasurement is called
-// after the HDC1080 triggers a ready interrupt.
+// with NO NEED of calling HDC1080_startMeasurement().
 //
 // return None.
 //
 //*****************************************************************************
-void HDC1080_readMeasurement(void)
+void HDC1080_readMeasurement_Combined(void)
 {
     i2c_master_transfer_t masterXfer;
     memset(&masterXfer, 0, sizeof(masterXfer));
@@ -945,7 +945,7 @@ void HDC1080_readMeasurement(void)
 		completionFlag = false;
 	}
 
-	OSA_TimeDelay(500);
+	OSA_TimeDelay(200);
 
 	masterXfer.direction = kI2C_Read;
 	masterXfer.subaddress = 0;
@@ -991,3 +991,63 @@ void HDC1080_readMeasurement(void)
 	PRINTF("The Temperature is %d\t", HDC_Temp);
 	PRINTF("The Humidity is %d\r\n", HDC_RH);
 }
+//*****************************************************************************
+//
+// Read temperature and humidity from sensor
+//
+//
+// This function reads the data from the HDC1080. HDC1080_readMeasurement is called
+// after calling HDC1080_startMeasurement().
+//
+// return None.
+//
+//*****************************************************************************
+void HDC1080_readMeasurement(void)
+{
+    i2c_master_transfer_t masterXfer;
+    memset(&masterXfer, 0, sizeof(masterXfer));
+
+    masterXfer.slaveAddress = HDC1080_ADDRESS;
+	masterXfer.direction = kI2C_Read;
+	masterXfer.subaddress = 0;
+	masterXfer.subaddressSize = 0;
+	masterXfer.data = (uint8_t *)HDC_Data;
+	masterXfer.dataSize = sizeof HDC_Data;
+	masterXfer.flags = kI2C_TransferDefaultFlag;
+
+	I2C_MasterTransferNonBlocking(BOARD_HDC_I2C_BASEADDR, &g_m_handle, &masterXfer);
+
+	/*  wait for transfer completed. */
+	while ((!nakFlag) && (!completionFlag))
+	{
+	}
+
+	nakFlag = false;
+
+	if (completionFlag == true)
+	{
+		completionFlag = false;
+	}
+
+	//Combine HDC Temp data bytes into one variable (allows for IQMath)
+	HDC_Temp = (
+			(0x00000000) |
+			((uint32_t)HDC_Data[0] << 8) |
+			((uint32_t)HDC_Data[1] << 0)
+			);
+	//Calculate temp according to HDC1080 datasheet
+	HDC_Temp = ((HDC_Temp*165)>>16)-40;
+
+	//Combine HDC RH data bytes into one 32-bit variable (allows for IQMath)
+	HDC_RH = (
+			(0x00000000) |
+			((uint32_t)HDC_Data[2] << 8) |
+			((uint32_t)HDC_Data[3] << 0)
+			);
+
+	//Calculate RH according to HDC1080 datasheet (leaves result in RH%)
+	HDC_RH = (HDC_RH*100)>>16;
+	PRINTF("The Temperature is %d\t", HDC_Temp);
+	PRINTF("The Humidity is %d\r\n", HDC_RH);
+}
+
